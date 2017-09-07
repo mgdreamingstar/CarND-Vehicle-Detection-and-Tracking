@@ -24,7 +24,7 @@ def plot3d(pixels, colors_rgb,
 
     # Plot pixel values with colors given in colors_rgb
     ax.scatter(
-        pixels[:, :, 0].ravel(),
+        pixels[:, :, 0].ravel(), # NOTE flattern
         pixels[:, :, 1].ravel(),
         pixels[:, :, 2].ravel(),
         c=colors_rgb.reshape((-1, 3)), edgecolors='none')
@@ -45,8 +45,17 @@ img_small_HSV = cv2.cvtColor(img_small, cv2.COLOR_BGR2HSV)
 img_small_rgb = img_small_RGB / 255.  # scaled to [0, 1], only for plotting
 
 # Plot and show
+# %%
 plot3d(img_small_RGB, img_small_rgb)
 plt.show()
 
+#%%
 plot3d(img_small_HSV, img_small_rgb, axis_labels=list("HSV"))
+plt.show()
+
+#%% Car Image Plot and show
+car_img = cv2.imread('25.png')
+car_img_RGB = cv2.cvtColor(car_img, cv2.COLOR_BGR2RGB)
+
+plot3d(car_img_RGB, car_img_RGB / 255)
 plt.show()
