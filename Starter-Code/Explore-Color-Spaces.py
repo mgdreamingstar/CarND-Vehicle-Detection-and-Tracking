@@ -33,8 +33,8 @@ def plot3d(pixels, colors_rgb,
 
 
 # Read a color image
-img = cv2.imread("000275.png")
-
+img = cv2.imread(R"Starter-Code\001240.png")
+type(img)
 # Select a small fraction of pixels to plot by subsampling it
 scale = max(img.shape[0], img.shape[1], 64) / 64  # at most 64 rows and columns
 img_small = cv2.resize(img, (np.int(img.shape[1] / scale), np.int(img.shape[0] / scale)), interpolation=cv2.INTER_NEAREST)
@@ -54,7 +54,7 @@ plot3d(img_small_HSV, img_small_rgb, axis_labels=list("HSV"))
 plt.show()
 
 #%% Car Image Plot and show
-car_img = cv2.imread('25.png')
+car_img = cv2.imread(R'Starter-Code\25.png')
 car_img_RGB = cv2.cvtColor(car_img, cv2.COLOR_BGR2RGB)
 
 plot3d(car_img_RGB, car_img_RGB / 255)
