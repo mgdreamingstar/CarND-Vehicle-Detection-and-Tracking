@@ -5,7 +5,7 @@ import pickle
 import cv2, os
 if os.getcwd() != 'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Code':
     os.chdir(R'Starter-Code')
-    
+
 from lesson_functions import *
 
 dist_pickle = pickle.load( open("svc_pickle.p", "rb" ) )
