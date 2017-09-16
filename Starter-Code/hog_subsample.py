@@ -36,13 +36,13 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     ch3 = ctrans_tosearch[:,:,2]
 
     # Define blocks and steps as above
-    nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1
-    nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1
-    nfeat_per_block = orient*cell_per_block**2
+    nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1 # yes: number of cells; no: number of blocks within this image on x axis
+    nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1 # number of blocks on y axis
+    nfeat_per_block = orient*cell_per_block**2 # no use
 
     # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
     window = 64
-    nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
+    nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1 # number of blocks within a window
     cells_per_step = 2  # Instead of overlap, define how many cells to step
     nxsteps = (nxblocks - nblocks_per_window) // cells_per_step
     nysteps = (nyblocks - nblocks_per_window) // cells_per_step
@@ -62,7 +62,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             hog_feat3 = hog3[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel()
             hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
 
-            xleft = xpos*pix_per_cell
+            xleft = xpos*pix_per_cell # extract image patch and plot box on image
             ytop = ypos*pix_per_cell
 
             # Extract the image patch
