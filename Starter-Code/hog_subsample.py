@@ -36,7 +36,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     ch3 = ctrans_tosearch[:,:,2]
 
     # Define blocks and steps as above
-    nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1 # yes: number of cells; no: number of blocks within this image on x axis
+    nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1 # yes: **number of cells** ; no: number of blocks within this image on x axis
     nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1 # number of blocks on y axis
     nfeat_per_block = orient*cell_per_block**2 # no use
 
