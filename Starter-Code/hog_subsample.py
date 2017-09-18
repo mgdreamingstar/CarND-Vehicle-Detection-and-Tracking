@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 import cv2, os
-if os.getcwd() != 'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Code':
-    os.chdir(R'Starter-Code')
+if os.getcwd() != R'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Code':
+    os.chdir(R'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Code')
 
 from lesson_functions import *
 
