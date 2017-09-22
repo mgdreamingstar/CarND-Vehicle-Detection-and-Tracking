@@ -18,14 +18,14 @@ if os.getcwd() != 'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Cod
 from sklearn.cross_validation import train_test_split
 # Define a function to return HOG features and visualization
 def get_hog_features(img, orient, pix_per_cell, cell_per_block,
-                        vis=False, feature_vec=True):
+                        vis=False, feature_vec=True,block_norm = 'L2'):
     # Call with two outputs if vis==True
     if vis == True:
         features, hog_image = hog(img, orientations=orient,
                                   pixels_per_cell=(pix_per_cell, pix_per_cell),
                                   cells_per_block=(cell_per_block, cell_per_block),
                                   transform_sqrt=True,
-                                  visualise=vis, feature_vector=feature_vec)
+                                  visualise=vis, feature_vector=feature_vec,block_norm = 'L2')
         return features, hog_image
     # Otherwise call with one output
     else:
@@ -33,7 +33,7 @@ def get_hog_features(img, orient, pix_per_cell, cell_per_block,
                        pixels_per_cell=(pix_per_cell, pix_per_cell),
                        cells_per_block=(cell_per_block, cell_per_block),
                        transform_sqrt=True,
-                       visualise=vis, feature_vector=feature_vec)
+                       visualise=vis, feature_vector=feature_vec,block_norm = 'L2')
         return features
 
 # Define a function to compute binned color features
@@ -93,11 +93,11 @@ def extract_features(imgs, color_space='RGB', spatial_size=(32, 32),
                 for channel in range(feature_image.shape[2]):
                     hog_features.append(get_hog_features(feature_image[:,:,channel],
                                         orient, pix_per_cell, cell_per_block,
-                                        vis=False, feature_vec=True))
+                                        vis=False, feature_vec=True, block_norm = 'L2'))
                 hog_features = np.ravel(hog_features)
             else:
                 hog_features = get_hog_features(feature_image[:,:,hog_channel], orient,
-                            pix_per_cell, cell_per_block, vis=False, feature_vec=True)
+                            pix_per_cell, cell_per_block, vis=False, feature_vec=True,block_norm = 'L2')
             # Append the new feature vector to the features list
             file_features.append(hog_features)
         features.append(np.concatenate(file_features))
