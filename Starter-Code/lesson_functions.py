@@ -1,6 +1,6 @@
 import matplotlib.image as mpimg
 import numpy as np
-import cv2
+import cv2,os
 from skimage.feature import hog
 if os.getcwd() != 'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Code':
     os.chdir(R'Starter-Code')
@@ -52,10 +52,10 @@ def extract_features(imgs, color_space='RGB', spatial_size=(32, 32),
     # Create a list to append feature vectors to
     features = []
     # Iterate through the list of images
-    for file in imgs:
+    for item in imgs:
         file_features = []
         # Read in each one by one
-        image = mpimg.imread(file)
+        image = item 
         # apply color conversion if other than 'RGB'
         if color_space != 'RGB':
             if color_space == 'HSV':
