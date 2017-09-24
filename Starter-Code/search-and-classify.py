@@ -14,8 +14,8 @@ if os.getcwd() != 'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\Starter-Cod
 # from lesson_functions import *
 # NOTE: the next import is only valid for scikit-learn version <= 0.17
 # for scikit-learn >= 0.18 use:
-# from sklearn.model_selection import train_test_split
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
+# from sklearn.cross_validation import train_test_split
 # Define a function to return HOG features and visualization
 def get_hog_features(img, orient, pix_per_cell, cell_per_block,
                         vis=False, feature_vec=True,block_norm = 'L2'):
@@ -256,8 +256,9 @@ def search_windows(img, windows, clf, scaler, color_space='RGB',
 with open(R'..\dataset\data_to_save.pickle','rb') as f:
     data_to_save = pickle.load(f)
 
-cars = data_to_save['car_imgs'][:500]
-notcars = data_to_save['non_car_imgs'][:500]
+cars = data_to_save['car_imgs'][:5000]
+notcars = data_to_save['non_car_imgs'][:5000]
+
 ### TODO: Tweak these parameters and see how the results change.
 color_space = 'RGB' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
@@ -314,7 +315,7 @@ print('Test Accuracy of SVC = ', round(svc.score(X_test, y_test), 4))
 # Check the prediction time for a single sample
 t=time.time()
 
-image = mpimg.imread('car_test.png')
+image = cv2.imread('car_test.png') # should use opencv to read image!!!!!
 draw_image = np.copy(image)
 
 # Uncomment the following line if you extracted training
@@ -335,3 +336,20 @@ hot_windows = search_windows(image, windows, svc, X_scaler, color_space=color_sp
 window_img = draw_boxes(draw_image, hot_windows, color=(0, 0, 255), thick=6)
 
 plt.imshow(window_img)
+
+# %% test svc to see if it's overfitting.
+# No overfitting.
+test_img = window_img[150:300,250:350]
+test_img_1 = cv2.resize(test_img,(64,64))
+features = single_img_features(test_img_1, color_space=color_space,
+                    spatial_size=spatial_size, hist_bins=hist_bins,
+                    orient=orient, pix_per_cell=pix_per_cell,
+                    cell_per_block=cell_per_block,
+                    hog_channel=hog_channel, spatial_feat=spatial_feat,
+                    hist_feat=hist_feat, hog_feat=hog_feat)
+#5) Scale extracted features to be fed to classifier
+X_scaler = StandardScaler().fit(X)
+test_features = X_scaler.transform(np.array(features).reshape(1, -1))
+#6) Predict using your classifier
+prediction = svc.predict(test_features)
+print(prediction)
