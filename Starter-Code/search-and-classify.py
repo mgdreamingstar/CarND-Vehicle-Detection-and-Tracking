@@ -260,7 +260,7 @@ cars = data_to_save['car_imgs'][:500]
 notcars = data_to_save['non_car_imgs'][:500]
 
 ### TODO: Tweak these parameters and see how the results change.
-color_space = 'HLS' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+color_space = 'HSV' # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9  # HOG orientations
 pix_per_cell = 8 # HOG pixels per cell
 cell_per_block = 2 # HOG cells per block
@@ -324,7 +324,7 @@ draw_image = np.copy(image)
 #image = image.astype(np.float32)/255
 
 windows = slide_window(image, x_start_stop=[None, None], y_start_stop=y_start_stop,
-                    xy_window=(12,12), xy_overlap=(0.75, 0.75))
+                    xy_window=(96,96), xy_overlap=(0.75, 0.75))
 
 hot_windows = search_windows(image, windows, svc, X_scaler, color_space=color_space,
                         spatial_size=spatial_size, hist_bins=hist_bins,
@@ -354,10 +354,12 @@ test_features = X_scaler.transform(np.array(features).reshape(1, -1))
 #6) Predict using your classifier
 prediction = svc.predict(test_features)
 print(prediction)
-
+cv2.imwrite('a_car.jpg',test_img_1)
 # %% pickle data for hog_subsample.py
-dist_pickle = {'svc':svc,'scaler':X_scaler,'orient':orient,'pix_per_cell':pix_per_cell,'cell_per_block':cell_per_block,'spatial_size':spatial_size,'hist_bins':hist_bins}
+flag = False
+if flag:
+    dist_pickle = {'svc':svc,'scaler':X_scaler,'orient':orient,'pix_per_cell':pix_per_cell,'cell_per_block':cell_per_block,'spatial_size':spatial_size,'hist_bins':hist_bins}
 
-os.chdir(R'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\dataset')
-with open(R'dist_pickle.pickle','wb') as f:
-    pickle.dump(dist_pickle,f)
+    os.chdir(R'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\dataset')
+    with open(R'dist_pickle.pickle','wb') as f:
+        pickle.dump(dist_pickle,f)
