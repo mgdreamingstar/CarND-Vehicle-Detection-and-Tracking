@@ -354,3 +354,10 @@ test_features = X_scaler.transform(np.array(features).reshape(1, -1))
 #6) Predict using your classifier
 prediction = svc.predict(test_features)
 print(prediction)
+
+# %% pickle data for hog_subsample.py
+dist_pickle = {'svc':svc,'scaler':X_scaler,'orient':orient,'pix_per_cell':pix_per_cell,'cell_per_block':cell_per_block,'spatial_size':spatial_size,'hist_bins':hist_bins}
+
+os.chdir(R'D:\\Github\\CarND-Vehicle-Detection-and-Tracking\\dataset')
+with open(R'dist_pickle.pickle','wb') as f:
+    pickle.dump(dist_pickle,f)
