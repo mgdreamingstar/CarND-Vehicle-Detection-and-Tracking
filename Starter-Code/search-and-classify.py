@@ -356,7 +356,7 @@ prediction = svc.predict(test_features)
 print(prediction)
 cv2.imwrite('a_car.jpg',test_img_1)
 # %% pickle data for hog_subsample.py
-flag = False
+flag = True
 if flag:
     dist_pickle = {'svc':svc,'scaler':X_scaler,'orient':orient,'pix_per_cell':pix_per_cell,'cell_per_block':cell_per_block,'spatial_size':spatial_size,'hist_bins':hist_bins}
 
