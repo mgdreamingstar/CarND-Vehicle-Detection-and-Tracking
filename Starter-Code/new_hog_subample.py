@@ -1,6 +1,10 @@
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 import cv2
 from skimage.feature import hog
+%matplotlib inline
 
 def convert_color(img, conv='RGB2YCrCb'):
     if conv == 'RGB2YCrCb':
@@ -9,6 +13,8 @@ def convert_color(img, conv='RGB2YCrCb'):
         return cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
     if conv == 'RGB2LUV':
         return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+    if conv == 'RGB2HSV':
+        return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
 
 def get_hog_features(img, orient, pix_per_cell, cell_per_block,
                         vis=False, feature_vec=True):
@@ -44,14 +50,54 @@ def color_hist(img, nbins=32):    #bins_range=(0, 256)
     hist_features = np.concatenate((channel1_hist[0], channel2_hist[0], channel3_hist[0]))
     # Return the individual histograms, bin_centers and feature vector
     return hist_features
+    
+def single_img_features(img, color_space='RGB', spatial_size=(32, 32),
+                        hist_bins=32, orient=9,
+                        pix_per_cell=8, cell_per_block=2, hog_channel=0,
+                        spatial_feat=True, hist_feat=True, hog_feat=True):
+    #1) Define an empty list to receive features
+    img_features = []
+    #2) Apply color conversion if other than 'RGB'
+    if color_space != 'RGB':
+        if color_space == 'HSV':
+            feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+        elif color_space == 'LUV':
+            feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+        elif color_space == 'HLS':
+            feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+        elif color_space == 'YUV':
+            feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
+        elif color_space == 'YCrCb':
+            feature_image = cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
+    else: feature_image = np.copy(img)
+    #3) Compute spatial features if flag is set
+    if spatial_feat == True:
+        spatial_features = bin_spatial(feature_image, size=spatial_size)
+        #4) Append features to list
+        img_features.append(spatial_features)
+    #5) Compute histogram features if flag is set
+    if hist_feat == True:
+        hist_features = color_hist(feature_image, nbins=hist_bins)
+        #6) Append features to list
+        img_features.append(hist_features)
+    #7) Compute HOG features if flag is set
+    if hog_feat == True:
+        if hog_channel == 'ALL':
+            hog_features = []
+            for channel in range(feature_image.shape[2]):
+                hog_features.extend(get_hog_features(feature_image[:,:,channel],
+                                    orient, pix_per_cell, cell_per_block,
+                                    vis=False, feature_vec=True))
+        else:
+            hog_features = get_hog_features(feature_image[:,:,hog_channel], orient,
+                        pix_per_cell, cell_per_block, vis=False, feature_vec=True)
+        #8) Append features to list
+        img_features.append(hog_features)
+
+    #9) Return concatenated array of features
+    return np.concatenate(img_features)
 
 
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import numpy as np
-import pickle
-import cv2
-from lesson_functions import *
 
 dist_pickle = pickle.load( open("D:\Github\CarND-Vehicle-Detection-and-Tracking\dataset\dist_pickle.pickle", "rb" ) )
 svc = dist_pickle["svc"]
@@ -63,34 +109,32 @@ spatial_size = dist_pickle["spatial_size"]
 hist_bins = dist_pickle["hist_bins"]
 
 img = mpimg.imread(R'D:\Github\CarND-Vehicle-Detection-and-Tracking\Starter-Code\test_image1.jpg')
-
+# img = cv2.imread(R'D:\Github\CarND-Vehicle-Detection-and-Tracking\Starter-Code\test_image1.jpg')
+print(img.shape)
 # Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
 
     draw_img = np.copy(img)
-    img = img.astype(np.float32)
+    img = img.astype(np.float32)/255
 
     img_tosearch = img[ystart:ystop,:,:]
-    ctrans_tosearch = img_tosearch
+    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2LUV')
     if scale != 1:
         imshape = ctrans_tosearch.shape
-        imshape
         ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1]/scale), np.int(imshape[0]/scale)))
-        plt.imshow(ctrans_tosearch)
+
     ch1 = ctrans_tosearch[:,:,0]
     ch2 = ctrans_tosearch[:,:,1]
     ch3 = ctrans_tosearch[:,:,2]
-    plt.imshow(ch1)
+
     # Define blocks and steps as above
     nxblocks = (ch1.shape[1] // pix_per_cell) - cell_per_block + 1
-    nxblocks
     nyblocks = (ch1.shape[0] // pix_per_cell) - cell_per_block + 1
     nfeat_per_block = orient*cell_per_block**2
 
     # 64 was the orginal sampling rate, with 8 cells and 8 pix per cell
     window = 64
     nblocks_per_window = (window // pix_per_cell) - cell_per_block + 1
-    nblocks_per_window
     cells_per_step = 2  # Instead of overlap, define how many cells to step
     nxsteps = (nxblocks - nblocks_per_window) // cells_per_step
     nysteps = (nyblocks - nblocks_per_window) // cells_per_step
@@ -99,11 +143,9 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     hog1 = get_hog_features(ch1, orient, pix_per_cell, cell_per_block, feature_vec=False)
     hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
     hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
-    hog1.shape
+
     for xb in range(nxsteps):
         for yb in range(nysteps):
-            xb = 11
-            yb = 2
             ypos = yb*cells_per_step
             xpos = xb*cells_per_step
             # Extract HOG for this patch
@@ -111,21 +153,19 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             hog_feat2 = hog2[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel()
             hog_feat3 = hog3[ypos:ypos+nblocks_per_window, xpos:xpos+nblocks_per_window].ravel()
             hog_features = np.hstack((hog_feat1, hog_feat2, hog_feat3))
-            hog_features.shape
+
             xleft = xpos*pix_per_cell
             ytop = ypos*pix_per_cell
 
             # Extract the image patch
             subimg = cv2.resize(ctrans_tosearch[ytop:ytop+window, xleft:xleft+window], (64,64))
-            plt.imshow(subimg)
+
             # Get color features
             spatial_features = bin_spatial(subimg, size=spatial_size)
-            spatial_features.shape
             hist_features = color_hist(subimg, nbins=hist_bins)
-            hist_features.shape
-            feature = np.hstack((spatial_features, hist_features, hog_features))
+
             # Scale features and make a prediction
-            test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)))
+            test_features = X_scaler.transform(np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))
             #test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))
             test_prediction = svc.predict(test_features)
 
@@ -137,10 +177,12 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 
     return draw_img
 
-ystart = 0
-ystop = 656
+ystart = 100
+ystop = img.shape[0]
 scale = 1.5
 
 out_img = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins)
 
 plt.imshow(out_img)
+
+car_imgs
