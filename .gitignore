@@ -1,3 +1,5 @@
 dataset/
 .idea/
 !dataset/dist_pickle.pickle
+submit/*/
+!first.zip
