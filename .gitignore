@@ -1,3 +1,5 @@
 dataset/
 .idea/
 !dataset/dist_pickle.pickle
+project_video_output.mp4
+*.mp4
