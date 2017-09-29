@@ -14,14 +14,14 @@ The goals / steps of this project are the following:
 * Estimate a bounding box for vehicles detected.
 
 [//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
+[image1]: ./writeup_imgs/car_not_car.jpg
+[image2]: ./writeup_imgs/HOG_example.jpg
+[image3]: ./writeup_imgs/sliding_windows.jpg
+[image4]: ./writeup_imgs/sliding_window.jpg
+[image5]: ./writeup_imgs/bboxes_and_heat.jpg
+[image6]: ./writeup_imgs/labels_map.png
+[image7]: ./writeup_imgs/output_boxes.jpg
+[video1]: ./project_video_output.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.
@@ -104,4 +104,3 @@ Here's an example result showing the heatmap from a series of frames of video, t
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.
-
